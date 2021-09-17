@@ -7,12 +7,12 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Random;
 
-public class DataBaseHandler {
+public class DataBaseLoginSystemHandler {
     static Connection connection = null;
     static HashMap<String,String> loginTokenMap = new HashMap<>();
     static int tokenSize= 18;
     public static void init(Connection connection) throws SQLException {
-        DataBaseHandler.connection = connection;
+        DataBaseLoginSystemHandler.connection = connection;
         String sqlCreate = "CREATE TABLE IF NOT EXISTS login_record"
                 + "  (user           VARCHAR(20),"
                 + "   password            VARCHAR(64))";

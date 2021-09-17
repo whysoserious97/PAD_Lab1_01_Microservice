@@ -11,7 +11,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Vector;
 
-public class JavaServer {
+public class JavaServerLoginSystem {
 
     static Connection connection;
     static String gatewayURL = "http://localhost:8000";
@@ -24,40 +24,40 @@ public class JavaServer {
     }
 
 
-    public JavaServer() throws SQLException {
+    public JavaServerLoginSystem() {
     }
 
     public Boolean isStatusUp(){
         return true;
     }
-    public String requestAutoDiscover(){
-        try {
-            XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-            config.setServerURL(new URL(gatewayURL));
-
-            XmlRpcClient server = new XmlRpcClient();
-            server.setConfig(config);
-            Vector params = new Vector();
-
-            params.add("127.0.0.1");
-            params.add(8100);
-
-            Object result = server.execute("autoDiscover",params);
-
-            String response = (String) result;
-            System.out.println("The response is: "+ response);
-            return "requestAutoDiscover:Requested";
-        }catch (Exception e){
-            System.err.println(e.getMessage());
-        }
-
-    return "requestAutoDiscover:Failed";
-    }
+//    public String requestAutoDiscover(){
+//        try {
+//            XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
+//            config.setServerURL(new URL(gatewayURL));
+//
+//            XmlRpcClient server = new XmlRpcClient();
+//            server.setConfig(config);
+//            Vector params = new Vector();
+//
+//            params.add("127.0.0.1");
+//            params.add(8100);
+//
+//            Object result = server.execute("autoDiscover",params);
+//
+//            String response = (String) result;
+//            System.out.println("The response is: "+ response);
+//            return "requestAutoDiscover:Requested";
+//        }catch (Exception e){
+//            System.err.println(e.getMessage());
+//        }
+//
+//    return "requestAutoDiscover:Failed";
+//    }
 
     public Boolean register(String login,String password){
         String response = "";
         try {
-            response =  DataBaseHandler.register(login,password);
+            response =  DataBaseLoginSystemHandler.register(login,password);
         }catch (Exception e){ e.printStackTrace(); }
 
         return response.equals("Success");
@@ -68,7 +68,7 @@ public class JavaServer {
         System.out.println("Service was called");
         String response = "";
         try {
-           response =  DataBaseHandler.login(login,password);
+           response =  DataBaseLoginSystemHandler.login(login,password);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -85,14 +85,14 @@ public class JavaServer {
             WebServer server = new WebServer(8100);
 
             PropertyHandlerMapping mapping = new PropertyHandlerMapping();
-            mapping.addHandler("SERVER", JavaServer.class);
+            mapping.addHandler("SERVER", loginSystem.JavaServerLoginSystem.class);
 
             server.getXmlRpcServer().setHandlerMapping(mapping);
             server.start();
 
             System.out.println("Started successfully.");
 
-            DataBaseHandler.init(connection);
+            DataBaseLoginSystemHandler.init(connection);
 
         } catch (Exception exception){
             System.err.println("loginSystem.JavaServer: " + exception);
