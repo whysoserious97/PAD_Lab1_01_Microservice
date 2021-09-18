@@ -10,11 +10,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Vector;
+import java.util.concurrent.*;
 
 public class JavaServerLikeSystem {
 
     static Connection connection;
     static String gatewayURL = "http://localhost:8000";
+    static ExecutorService service = Executors.newFixedThreadPool(5);
     static {
         try {
             connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/microservice_likes","root","root");
@@ -24,10 +26,11 @@ public class JavaServerLikeSystem {
     }
 
 
-    public JavaServerLikeSystem() throws SQLException {
+    public JavaServerLikeSystem() {
     }
 
     public boolean isStatusUp(){
+        System.out.println("Entered");
         return true;
     }
 
@@ -41,13 +44,32 @@ public class JavaServerLikeSystem {
         return "Liked";
     }
 
-    public int getLikes(String id){
-        int response = 0;
-        try {
-            response =  DataBaseLikeSystemHandler.getLikes(id);
-        }catch (Exception e){ e.printStackTrace(); }
+    public String getLikes(String id){
 
-        return response;
+        Callable callable = () -> {
+
+//            Thread.sleep(6000);
+            System.out.println("Disturbed Like System - getLikes");
+            String response = "None";
+            try {
+                response =  DataBaseLikeSystemHandler.getLikes(id);
+            }catch (Exception e){ e.printStackTrace(); }
+
+            return response;
+        };
+
+        Future future = service.submit(callable);
+
+        try{
+            return String.valueOf(future.get(5, TimeUnit.SECONDS));
+        }catch (InterruptedException | ExecutionException e){
+            e.printStackTrace();
+        }catch (TimeoutException e){
+            return "None";
+        } finally {
+            service.shutdown();
+        }
+        return "None";
     }
 
     public static void main (String [] args){
@@ -56,7 +78,7 @@ public class JavaServerLikeSystem {
             WebServer server = new WebServer(8102);
 
             PropertyHandlerMapping mapping = new PropertyHandlerMapping();
-            mapping.addHandler("SERVERLike", JavaServerLikeSystem.class);
+            mapping.addHandler("SERVER", JavaServerLikeSystem.class);
 
             server.getXmlRpcServer().setHandlerMapping(mapping);
             server.start();

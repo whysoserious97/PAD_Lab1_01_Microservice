@@ -24,14 +24,14 @@ public class DataBaseLikeSystemHandler {
             stmt.execute(query);
     }
 
-    public static int getLikes(String id) throws SQLException {
-        String query = "SELECT likes FROM likes_table WHERE videoID = " + id;
+    public static String getLikes(String id) throws SQLException {
+        String query = "SELECT likes FROM likes_table WHERE videoID = '" + id + "'";
 
         Statement stmt = connection.createStatement();
         ResultSet rs = stmt.executeQuery(query);
-        while (rs.next()){
-            return rs.getInt("likes");
+        if (rs.next()){
+            return String.valueOf(rs.getInt("likes"));
         }
-        return 0;
+        return "None";
     }
 }
