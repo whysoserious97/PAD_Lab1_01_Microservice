@@ -28,6 +28,7 @@ public class JavaServerLoginSystem {
     }
 
     public Boolean isStatusUp(){
+        System.out.println("Is up");
         return true;
     }
 //    public String requestAutoDiscover(){

@@ -61,14 +61,15 @@ public class JavaServerLikeSystem {
         Future future = service.submit(callable);
 
         try{
-            return String.valueOf(future.get(5, TimeUnit.SECONDS));
+            return String.valueOf(future.get(15, TimeUnit.SECONDS));
         }catch (InterruptedException | ExecutionException e){
             e.printStackTrace();
         }catch (TimeoutException e){
             return "None";
-        } finally {
-            service.shutdown();
         }
+//        finally {
+////            service.shutdown();
+//        }
         return "None";
     }
 
